@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Linkedin, Github, Twitter, Mail, ArrowRight, Calendar, Briefcase, ExternalLink, Code } from "lucide-react";
+import { Linkedin, Github, Mail, ArrowRight, Calendar, Briefcase, ExternalLink, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ScrollReveal from "@/components/ScrollReveal";
@@ -47,7 +47,7 @@ const SkillsFooter: React.FC<SkillsFooterProps> = ({ items }) => {
           key={index}
           className="flex flex-col items-center justify-center gap-3 p-4 rounded-lg border border-border bg-card hover:bg-accent/5 transition-colors"
         >
-          <img
+          <Image
             src={item.icon}
             alt={item.name || "Skill icon"}
             className="w-10 h-10 object-contain"

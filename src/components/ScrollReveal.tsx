@@ -28,7 +28,7 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
 }) => {
     const controls = useAnimation();
     const ref = useRef<HTMLDivElement>(null);
-    const [isVisible, setIsVisible] = useState(false);
+    const [_, setIsVisible] = useState(false);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
