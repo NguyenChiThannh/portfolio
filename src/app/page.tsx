@@ -354,7 +354,7 @@ function UiUxCarousel() {
 
     const scroll = () => {
       // Calculate the next position with a small increment for smoother scrolling
-      scrollPosition += 1;
+      scrollPosition += 0.7;
 
       // Reset when we reach the end
       if (scrollPosition >= totalWidth - viewWidth) {
@@ -368,11 +368,11 @@ function UiUxCarousel() {
     };
 
     // Use a faster interval for smoother animation
-    const interval = setInterval(scroll, 10);
+    const interval = setInterval(scroll, 30);
 
     // Pause scrolling when user hovers over the carousel
     const pauseScroll = () => clearInterval(interval);
-    const resumeScroll = () => setInterval(scroll, 10);
+    const resumeScroll = () => setInterval(scroll, 30);
 
     carousel.addEventListener('mouseenter', pauseScroll);
     carousel.addEventListener('mouseleave', resumeScroll);
