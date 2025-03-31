@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Linkedin, Github, Mail, ArrowRight, Calendar, Briefcase, ExternalLink, Code } from "lucide-react";
+import { Linkedin, Github, Mail, ArrowRight, Calendar, Briefcase, ExternalLink, Code, } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ScrollReveal from "@/components/ScrollReveal";
@@ -316,6 +316,114 @@ const projects: Project[] = [
     categories: ["Backend"]
   },
 ];
+
+const uiUxWorks = [
+  {
+    id: 1,
+    title: "Travel Page",
+    image: "/ui-ux-1.png",
+  },
+  {
+    id: 2,
+    title: "Travel Mobile",
+    image: "/ui-ux-2.png",
+  },
+  {
+    id: 3,
+    title: "Data Landing Page",
+    image: "/ui-ux-3.jpg",
+  },
+  {
+    id: 4,
+    title: "Food Landing Page",
+    image: "/ui-ux-4.png",
+  },
+];
+
+function UiUxCarousel() {
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  // Auto scroll effect with smoother transition
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+
+    let scrollPosition = 0;
+    const totalWidth = carousel.scrollWidth;
+    const viewWidth = carousel.offsetWidth;
+
+    const scroll = () => {
+      // Calculate the next position with a small increment for smoother scrolling
+      scrollPosition += 1;
+
+      // Reset when we reach the end
+      if (scrollPosition >= totalWidth - viewWidth) {
+        scrollPosition = 0;
+      }
+
+      // Apply the scroll position
+      if (carousel) {
+        carousel.scrollLeft = scrollPosition;
+      }
+    };
+
+    // Use a faster interval for smoother animation
+    const interval = setInterval(scroll, 10);
+
+    // Pause scrolling when user hovers over the carousel
+    const pauseScroll = () => clearInterval(interval);
+    const resumeScroll = () => setInterval(scroll, 10);
+
+    carousel.addEventListener('mouseenter', pauseScroll);
+    carousel.addEventListener('mouseleave', resumeScroll);
+
+    return () => {
+      clearInterval(interval);
+      if (carousel) {
+        carousel.removeEventListener('mouseenter', pauseScroll);
+        carousel.removeEventListener('mouseleave', resumeScroll);
+      }
+    };
+  }, []);
+
+  return (
+    <div className="w-full max-w-6xl mx-auto overflow-hidden rounded-lg">
+      <div
+        className="flex gap-4 pb-4"
+        ref={carouselRef}
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          overflow: 'hidden'
+        }}
+      >
+        {/* Duplicate the items to create an infinite scroll effect */}
+        {[...uiUxWorks, ...uiUxWorks].map((work, index) => (
+          <div
+            key={`${work.id}-${index}`}
+            className="min-w-[300px] h-[200px] flex-shrink-0 rounded-lg overflow-hidden border border-border"
+          >
+            <Link
+              href="https://www.behance.net/nguyenchithannh"
+              target="_blank"
+              className="block w-full h-full relative group"
+            >
+              <Image
+                src={work.image}
+                alt={work.title}
+                fill
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <span className="text-white font-medium">{work.title}</span>
+              </div>
+            </Link>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   // Add state for active category
@@ -711,6 +819,29 @@ export default function Home() {
               <Button variant="outline" asChild>
                 <Link href="#">
                   View All Projects <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* UI/UX Work Section */}
+      <section id="uiux" className="container mx-auto px-4 py-16 bg-secondary/5">
+        <div className="max-w-6xl mx-auto">
+          <ScrollReveal delay={0.2}>
+            <Badge variant="outline" className="mb-4 mx-auto block w-fit">UI/UX Portfolio</Badge>
+            <h2 className="text-3xl font-bold text-center mb-8">Design Showcase</h2>
+            <p className="text-center text-muted-foreground mb-10 max-w-2xl mx-auto">
+              A collection of my UI/UX design work. Click on any design to view my complete portfolio on Behance.
+            </p>
+
+            <UiUxCarousel />
+
+            <div className="mt-10 text-center">
+              <Button asChild>
+                <Link href="https://www.behance.net/nguyenchithannh" target="_blank" className="flex items-center">
+                  View Full Portfolio <ExternalLink className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>
