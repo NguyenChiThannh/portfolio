@@ -342,8 +342,8 @@ const uiUxWorks = [
 
 function UiUxCarousel() {
   const carouselRef = useRef<HTMLDivElement>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null); // Lưu interval vào ref
 
-  // Auto scroll effect with smoother transition
   useEffect(() => {
     const carousel = carouselRef.current;
     if (!carousel) return;
@@ -353,36 +353,41 @@ function UiUxCarousel() {
     const viewWidth = carousel.offsetWidth;
 
     const scroll = () => {
-      // Calculate the next position with a small increment for smoother scrolling
-      scrollPosition += 0.7;
+      scrollPosition += 2;
 
-      // Reset when we reach the end
       if (scrollPosition >= totalWidth - viewWidth) {
         scrollPosition = 0;
       }
 
-      // Apply the scroll position
       if (carousel) {
         carousel.scrollLeft = scrollPosition;
       }
     };
 
-    // Use a faster interval for smoother animation
-    const interval = setInterval(scroll, 30);
+    // Hàm bắt đầu scroll
+    const startScroll = () => {
+      if (!intervalRef.current) { // Chỉ tạo interval nếu chưa có
+        intervalRef.current = setInterval(scroll, 30);
+      }
+    };
 
-    // Pause scrolling when user hovers over the carousel
-    const pauseScroll = () => clearInterval(interval);
-    const resumeScroll = () => setInterval(scroll, 30);
+    // Hàm dừng scroll
+    const stopScroll = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null; // Reset về null để có thể restart lại
+      }
+    };
 
-    carousel.addEventListener('mouseenter', pauseScroll);
-    carousel.addEventListener('mouseleave', resumeScroll);
+    startScroll(); // Bắt đầu khi component mount
+
+    carousel.addEventListener("mouseenter", stopScroll);
+    carousel.addEventListener("mouseleave", startScroll);
 
     return () => {
-      clearInterval(interval);
-      if (carousel) {
-        carousel.removeEventListener('mouseenter', pauseScroll);
-        carousel.removeEventListener('mouseleave', resumeScroll);
-      }
+      stopScroll(); // Dừng khi component unmount
+      carousel.removeEventListener("mouseenter", stopScroll);
+      carousel.removeEventListener("mouseleave", startScroll);
     };
   }, []);
 
@@ -392,12 +397,11 @@ function UiUxCarousel() {
         className="flex gap-4 pb-4"
         ref={carouselRef}
         style={{
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          overflow: 'hidden'
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          overflow: "hidden",
         }}
       >
-        {/* Duplicate the items to create an infinite scroll effect */}
         {[...uiUxWorks, ...uiUxWorks].map((work, index) => (
           <div
             key={`${work.id}-${index}`}
@@ -424,6 +428,7 @@ function UiUxCarousel() {
     </div>
   );
 }
+
 
 export default function Home() {
   // Add state for active category
