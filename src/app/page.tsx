@@ -37,6 +37,7 @@ interface Project {
   demoLink: string;
   duration: string;
   teamSize: number;
+  categories: string[];
 }
 
 const SkillsFooter: React.FC<SkillsFooterProps> = ({ items }) => {
@@ -50,6 +51,8 @@ const SkillsFooter: React.FC<SkillsFooterProps> = ({ items }) => {
           <Image
             src={item.icon}
             alt={item.name || "Skill icon"}
+            width={40}
+            height={40}
             className="w-10 h-10 object-contain"
           />
           <span className="text-sm text-center font-medium">
@@ -257,7 +260,8 @@ const projects: Project[] = [
     codeLink: ["https://github.com/NguyenChiThannh/loopme-apis"],
     demoLink: "",
     duration: "09/2024 - 2/2025",
-    teamSize: 1
+    teamSize: 1,
+    categories: ["Backend"]
   },
   {
     id: 2,
@@ -276,6 +280,7 @@ const projects: Project[] = [
     demoLink: "",
     duration: "12/2023 - 6/2024",
     teamSize: 1,
+    categories: ["Frontend", "Backend"]
   },
   {
     id: 3,
@@ -291,6 +296,7 @@ const projects: Project[] = [
     demoLink: "",
     duration: "6/2024 - 6/2025",
     teamSize: 1,
+    categories: ["Frontend"]
   },
   {
     id: 4,
@@ -307,9 +313,19 @@ const projects: Project[] = [
     demoLink: "",
     duration: "4/2024 - 6/2024",
     teamSize: 4,
-  }
+    categories: ["Backend"]
+  },
 ];
+
 export default function Home() {
+  // Add state for active category
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  // Filter projects based on active category
+  const filteredProjects = activeCategory === "All"
+    ? projects
+    : projects.filter(project => project.categories.includes(activeCategory));
+
   return (
     <div className="min-h-screen bg-background text-foreground">
 
@@ -543,11 +559,31 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <ScrollReveal delay={0.2}>
             <Badge variant="outline" className="mb-4 mx-auto block w-fit">My Work</Badge>
-            <h2 className="text-3xl font-bold text-center mb-12">Featured Projects</h2>
+            <h2 className="text-3xl font-bold text-center mb-8">Featured Projects</h2>
+
+            {/* Category Filter */}
+            <div className="flex justify-center mb-8 gap-2">
+              {["All", "Backend", "Frontend"].map((category) => (
+                <Button
+                  key={category}
+                  variant={activeCategory === category ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setActiveCategory(category)}
+                  className="min-w-20"
+                >
+                  {category}
+                </Button>
+              ))}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {projects.map((project, index) => (
-                <ScrollReveal key={project.id} delay={0.3 + index * 0.1} y={30} className="group">
+              {filteredProjects.map((project, index) => (
+                <ScrollReveal
+                  key={`${activeCategory}-${project.id}`}
+                  delay={0.3 + index * 0.1}
+                  y={30}
+                  className="group"
+                >
                   <div className="border border-border rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md hover:border-primary/20 h-full flex flex-col">
                     <div className="relative h-48 bg-secondary/20">
                       <Image
@@ -663,6 +699,13 @@ export default function Home() {
                 </ScrollReveal>
               ))}
             </div>
+
+            {/* Show message when no projects match the filter */}
+            {filteredProjects.length === 0 && (
+              <div className="text-center py-12 text-muted-foreground">
+                No projects found in this category.
+              </div>
+            )}
 
             <div className="mt-12 text-center">
               <Button variant="outline" asChild>
